@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Suno UI Prototype",
+    "slug": "suno-ui",
+    "scheme": "suno-ui",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "dev.m620.sunoui",
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/demo-avatar.png"
+    },
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow this prototype to record audio you choose to attach."
+        }
+      ],
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "android": [
+              "en"
+            ],
+            "ios": [
+              "en"
+            ]
+          }
+        }
+      ],
+      "./src/native/withVoiceAudio.cjs",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow this prototype to take a photo you choose to turn into a local example.",
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": false
+        }
+      ],
+      "./src/native/withProfilePickerRecovery.cjs"
+    ]
+  }
+}
