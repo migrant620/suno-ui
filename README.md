@@ -2,6 +2,8 @@
 
 An independent, interactive prototype of Suno's mobile interface, built with Expo, React Native, and TypeScript.
 
+Created to help people get to know Suno through a hands-on exploration of its interface, and to appreciate the details that make music creation feel inviting. For the full experience of turning your ideas into music, explore [Suno](https://suno.com).
+
 Explore editable creation forms, a sample music library, and working audio playback. Creation uses prerecorded examples; it does not generate music or connect to a Suno account.
 
 [Live demo](https://suno-ui.edgeone.cool) · [Explore the prototype](#explore-the-prototype) · [Run locally](#run-locally) · [Scope and limitations](#scope-and-limitations)
