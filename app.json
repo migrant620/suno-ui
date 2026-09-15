@@ -6,12 +6,6 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "android": {
-      "package": "dev.m620.sunoui",
-      "permissions": [
-        "android.permission.POST_NOTIFICATIONS"
-      ]
-    },
     "web": {
       "bundler": "metro",
       "output": "single",
@@ -37,7 +31,6 @@
           }
         }
       ],
-      "./src/native/withVoiceAudio.cjs",
       [
         "expo-camera",
         {
@@ -45,8 +38,10 @@
           "recordAudioAndroid": false,
           "barcodeScannerEnabled": false
         }
-      ],
-      "./src/native/withProfilePickerRecovery.cjs"
+      ]
+    ],
+    "platforms": [
+      "web"
     ]
   }
 }

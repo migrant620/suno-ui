@@ -17,6 +17,10 @@ Explore editable creation forms, a sample music library, and working audio playb
 | Hooks | Browse sample music clips and the inspiration entries. |
 | Profile | Edit local profile details and explore settings and subscription screens. |
 
+### In the details
+
+A closer look at the current edition: editable drafts, persistent playlists, and bundled typography across the interface.
+
 ### A first walkthrough
 
 1. Open **Search**, then open **Morning Light** in the player.
