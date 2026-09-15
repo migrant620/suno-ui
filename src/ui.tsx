@@ -4,12 +4,17 @@ import { Modal, Platform, Pressable, StyleSheet, Text, TextProps, View, ViewStyl
 import Undo2 from 'lucide-react-native/icons/undo-2';
 import Redo2 from 'lucide-react-native/icons/redo-2';
 import Library from 'lucide-react-native/icons/library';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import createIconSet from '@expo/vector-icons/createIconSet';
+import ioniconsGlyphMap from '@expo/vector-icons/build/vendor/react-native-vector-icons/glyphmaps/Ionicons.json';
+import materialGlyphMap from '@expo/vector-icons/build/vendor/react-native-vector-icons/glyphmaps/MaterialIcons.json';
+import communityGlyphMap from '@expo/vector-icons/build/vendor/react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json';
 import { LinearGradient } from 'expo-linear-gradient';
 import { tokens } from './tokens';
 import { useSurfaceColors } from './Theme';
+
+export const Ionicons = createIconSet(ioniconsGlyphMap, 'ionicons', require('../assets/fonts/Ionicons.ttf'));
+const MaterialIcons = createIconSet(materialGlyphMap, 'material', require('../assets/fonts/MaterialIcons.ttf'));
+const MaterialCommunityIcons = createIconSet(communityGlyphMap, 'material-community', require('../assets/fonts/MaterialCommunityIcons.ttf'));
 
 export const C = tokens.colors;
 export type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];

@@ -49,7 +49,6 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
-import { Roboto_400Regular } from '@expo-google-fonts/roboto/400Regular';
 import { Library, LibraryRoute } from './Library';
 import { useLibrary } from './useLibrary';
 import { useLibraryPlayback } from './useLibraryPlayback';
@@ -57,8 +56,6 @@ import { LibraryPlayer } from './LibraryPlayer';
 import { LibraryMiniPlayer } from './LibraryMiniPlayer';
 import * as Linking from 'expo-linking';
 import { decodeSharedPlaylist } from './playlistSharing';
-import { Roboto_700Bold } from '@expo-google-fonts/roboto/700Bold';
-import { Roboto_500Medium } from '@expo-google-fonts/roboto/500Medium';
 import AsyncStorage from './accountStorage';
 import { CreationBackground } from './CreationBackground';
 import * as DocumentPicker from 'expo-document-picker';
@@ -76,7 +73,7 @@ const suggestions = [['flute', 'male voice', 'piano', 'synthwave'], ['japanese',
 type Overlay = 'add' | 'create-options' | 'audio' | 'voice' | 'model' | 'model-offer' | 'upgrade' | 'help' | 'record' | 'generation' | null;
 
 export default function App() {
-  const [fontsLoaded, fontError] = useFonts({ InstrumentSerif: require('../assets/fonts/InstrumentSerif-Regular.ttf'), RobotoRegular: Roboto_400Regular, RobotoMedium: Roboto_500Medium, RobotoBold: Roboto_700Bold });
+  const [fontsLoaded, fontError] = useFonts({ InstrumentSerif: require('../assets/fonts/InstrumentSerif-Regular.ttf'), RobotoRegular: require('../assets/fonts/Roboto_400Regular.ttf'), RobotoMedium: require('../assets/fonts/Roboto_500Medium.ttf'), RobotoBold: require('../assets/fonts/Roboto_700Bold.ttf') });
   return <GestureHandlerRootView style={{ flex: 1 }}><SafeAreaProvider><ThemeProvider>
     <StatusBar style="dark" />
     {fontsLoaded ? <LocalSession><CreationApp /></LocalSession> : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: C.surface }}>{fontError ? <Label>Font loading failed. Reload to retry.</Label> : <ActivityIndicator color={C.ink} />}</View>}

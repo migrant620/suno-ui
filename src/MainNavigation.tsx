@@ -7,7 +7,7 @@ import Pause from 'lucide-react-native/icons/pause';
 import { AudioTrack } from './audioData';
 import Library from 'lucide-react-native/icons/library';
 import Sparkle from 'lucide-react-native/icons/sparkle';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Ionicons } from './ui';
 
 type Tab = 'hooks' | 'search' | 'create' | 'library' | 'profile';
 const tabs: { id: Tab; label: string }[] = [
