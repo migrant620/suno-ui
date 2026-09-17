@@ -20,6 +20,7 @@ export function TextEditor({ kind, state, dispatch, onClose, entry = 'editor' }:
   const anchors = useRef(new Map<string, View>());
   const [naming, setNaming] = useState<Naming | null>(entry === 'save' ? { type: 'save' } : null);
   const [name, setName] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState<SavedText | null>(null);
   const enhancement = useEnhancement(state, dispatch);
   const input = useRef<TextInput>(null);
   const nameInput = useRef<TextInput>(null);
@@ -67,7 +68,7 @@ export function TextEditor({ kind, state, dispatch, onClose, entry = 'editor' }:
         <Pressable accessibilityRole="button" accessibilityLabel="Close options" onPress={() => setMenu(null)} style={StyleSheet.absoluteFill} />
         <View style={[E.contextMenu, { left: menu.x, top: menu.y }]}>
           <Pressable accessibilityRole="button" accessibilityLabel="Rename" onPress={() => openName({ type: 'rename', item: menuItem })} style={E.menuItem}><Icon name="pencil" /><Label>Rename</Label></Pressable>
-          <Pressable accessibilityRole="button" accessibilityLabel="Delete" onPress={() => { dispatch({ type: 'delete', id: menuItem.id }); setMenu(null); }} style={E.menuItem}><Icon name="delete" color={C.primary} /><Label style={{ color: C.primary }}>Delete</Label></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Delete" onPress={() => { setConfirmDelete(menuItem); setMenu(null); }} style={E.menuItem}><Icon name="delete" color={C.primary} /><Label style={{ color: C.primary }}>Delete</Label></Pressable>
         </View>
       </View>}
     </View> : <>
@@ -96,6 +97,16 @@ export function TextEditor({ kind, state, dispatch, onClose, entry = 'editor' }:
         <View style={E.dialogButtons}>
           <Pressable accessibilityRole="button" onPress={cancelName} style={E.cancel}><Label>Cancel</Label></Pressable>
           <Pressable accessibilityRole="button" disabled={!name.trim()} onPress={save} style={[E.save, !name.trim() && { opacity: 0.35 }]}><Label style={{ color: C.surface }}>Save</Label></Pressable>
+        </View>
+      </View></View>
+    </Modal>}
+    {confirmDelete && <Modal transparent animationType="fade" onRequestClose={() => setConfirmDelete(null)}>
+      <View style={E.dialogOuter}><View style={E.dialog}>
+        <Label style={E.dialogTitle}>Delete saved {singular}?</Label>
+        <Label style={E.dialogDescription}>{confirmDelete.name} will be removed from your saved {title.toLowerCase()}. This cannot be undone.</Label>
+        <View style={E.dialogButtons}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Cancel" onPress={() => setConfirmDelete(null)} style={E.cancel}><Label>Cancel</Label></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Delete saved item" onPress={() => { dispatch({ type: 'delete', id: confirmDelete.id }); setConfirmDelete(null); }} style={[E.save, { backgroundColor: C.primary }]}><Label style={{ color: C.surface }}>Delete</Label></Pressable>
         </View>
       </View></View>
     </Modal>}
