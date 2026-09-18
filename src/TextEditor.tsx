@@ -41,8 +41,15 @@ export function TextEditor({ kind, state, dispatch, onClose, entry = 'editor' }:
   };
   const menuItem = items.find(item => item.id === menu?.id);
   const openName = (next: Naming) => { setMenu(null); setNaming(next); setName(next.type === 'rename' ? next.item.name : ''); };
+  const trimmedName = name.trim();
+  const duplicateName = trimmedName.length > 0 && items.some(item => item.id !== (naming && naming.type === 'rename' ? naming.item.id : '') && item.name.toLowerCase() === trimmedName.toLowerCase());
+  const nameTooLong = trimmedName.length > 40;
+  const nameError = duplicateName
+    ? `A saved ${singular.toLowerCase()} named “${trimmedName}” already exists`
+    : nameTooLong ? 'Names must be 40 characters or fewer' : '';
+  const canSaveName = trimmedName.length > 0 && !duplicateName && !nameTooLong;
   const save = () => {
-    if (!name.trim() || !naming) return;
+    if (!canSaveName || !naming) return;
     if (naming.type === 'rename') dispatch({ type: 'rename', id: naming.item.id, name });
     else dispatch({ type: 'save', item: { id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, kind, name: name.trim(), value: h.value, createdAt: Date.now() } });
     setNaming(null); Keyboard.dismiss(); if (entry === 'save') onClose();
@@ -94,9 +101,10 @@ export function TextEditor({ kind, state, dispatch, onClose, entry = 'editor' }:
         <Label style={E.dialogTitle}>{naming.type === 'rename' ? 'Rename' : `Save ${singular}`}</Label>
         {naming.type === 'save' && <Label style={E.dialogDescription}>Give your {kind === 'lyrics' ? 'lyrics' : 'style'} a title so it's easy to remember</Label>}
         <TextInput ref={nameInput} autoFocus={Platform.OS === 'web'} accessibilityLabel="Name" value={name} onChangeText={setName} style={E.nameInput} placeholder="Name" placeholderTextColor={C.muted} selectionColor={C.primary} onSubmitEditing={save} />
+        {nameError ? <Label accessibilityRole="alert" style={E.dialogError}>{nameError}</Label> : null}
         <View style={E.dialogButtons}>
           <Pressable accessibilityRole="button" onPress={cancelName} style={E.cancel}><Label>Cancel</Label></Pressable>
-          <Pressable accessibilityRole="button" disabled={!name.trim()} onPress={save} style={[E.save, !name.trim() && { opacity: 0.35 }]}><Label style={{ color: C.surface }}>Save</Label></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel={canSaveName ? 'Save named item' : 'Save disabled until the name is valid'} disabled={!canSaveName} onPress={save} style={[E.save, !canSaveName && { opacity: 0.35 }]}><Label style={{ color: C.surface }}>Save</Label></Pressable>
         </View>
       </View></View>
     </Modal>}
@@ -134,6 +142,7 @@ const styles = (C: ThemeColors) => StyleSheet.create({
   dialog: { width: '100%', maxWidth: 360, padding: 24, borderRadius: 24, backgroundColor: C.toolbar },
   dialogTitle: { textAlign: 'center', fontFamily: 'RobotoMedium', marginBottom: 16 },
   dialogDescription: { color: C.muted, textAlign: 'center', marginBottom: 20, lineHeight: 24 },
+  dialogError: { color: C.primary, textAlign: 'center', fontFamily: 'RobotoMedium', fontSize: 13, lineHeight: 18, marginBottom: 12 },
   nameInput: { backgroundColor: C.surface === '#101012' ? C.control : '#10101208', borderRadius: 16, padding: 16, fontSize: 16, fontFamily: 'RobotoRegular', color: C.ink, height: 56 },
   dialogButtons: { flexDirection: 'row', gap: 12, marginTop: 16 },
   cancel: { flex: 1, borderRadius: 999, minHeight: 56, backgroundColor: C.surface === '#101012' ? C.control : '#10101208', justifyContent: 'center', alignItems: 'center' },

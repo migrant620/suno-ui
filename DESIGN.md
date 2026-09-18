@@ -75,7 +75,7 @@ The common page inset is 16 px. Compact gaps use 8 px, rows use 12 px, and secti
 
 ## Interaction States
 
-Forms provide focus, selected, disabled, loading, error, and dismissal states where implemented. Creating a local example displays an explanation that no music is generated. The resulting item can be opened from the library.
+Forms provide focus, selected, disabled, loading, error, and dismissal states where implemented. The Saved Lyrics/Styles naming dialog validates the entered name and shows an inline message while keeping Save disabled when the name is empty, duplicates an existing saved item of the same kind, or exceeds 40 characters. Creating a local example displays an explanation that no music is generated. The resulting item can be opened from the library.
 
 Local storage belongs to the current browser and origin. Clearing browser data removes local examples and preferences. Media permission and file-selection behaviour depend on the browser and device.
 
