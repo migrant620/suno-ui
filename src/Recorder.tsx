@@ -4,20 +4,23 @@ import { AudioTrack, clockTime } from './audioData';
 import { useRecorder } from './useRecorder';
 import { useTrackPlayback } from './Audio';
 import { C, Icon, IconButton, Label, Sheet } from './ui';
-
-export function Recorder({ onClose, onUse }: { onClose: () => void; onUse: (track: AudioTrack) => void }) {
-  const recorder = useRecorder();
-  const track = useMemo<AudioTrack | null>(() => recorder.file ? { id: `recording-${Date.now()}`, title: 'Audio recording', styles: '', lyrics: '', source: { uri: recorder.file.uri }, duration: recorder.file.duration } : null, [recorder.file]);
-  const playback = useTrackPlayback(track);
-  return <Sheet onClose={onClose} backgroundColor="#E0DEDA">
+export function Recorder({ onClose, onUse }: {
+    onClose: () => void;
+    onUse: (track: AudioTrack) => void;
+}) {
+    const recorder = useRecorder();
+    const track = useMemo<AudioTrack | null>(() => recorder.file ? { id: `recording-${Date.now()}`, title: 'Audio recording', styles: '', lyrics: '', source: { uri: recorder.file.uri }, duration: recorder.file.duration } : null, [recorder.file]);
+    const playback = useTrackPlayback(track);
+    return <Sheet onClose={onClose} backgroundColor="#E0DEDA">
     <View style={R.content}><Label style={R.title}>Record Audio</Label><Label style={R.subtitle}>Your recording stays on this device.</Label>
-      <View style={R.center}><View style={R.line} /><Icon name={recorder.recording ? 'microphone' : recorder.file ? 'waveform' : 'microphone-outline'} size={52} color={recorder.recording ? '#C32906' : C.muted} /><View style={R.line} /></View>
+      <View style={R.center}><View style={R.line}/><Icon name={recorder.recording ? 'microphone' : recorder.file ? 'waveform' : 'microphone-outline'} size={52} color={recorder.recording ? '#C32906' : C.muted}/><View style={R.line}/></View>
       <Label accessibilityLabel="Recording duration" style={R.time}>{clockTime(recorder.seconds)}</Label>
       <Label style={R.hint}>{recorder.file ? 'Listen back or attach your recording.' : recorder.recording ? 'Recording… Tap to stop.' : 'Tap to record at least 6 seconds.'}</Label>
       {!!recorder.error && <Label accessibilityRole="alert" accessibilityLiveRegion="polite" style={R.error}>{recorder.error}</Label>}
       {!!playback.error && <Label accessibilityRole="alert" style={R.error}>{playback.error}</Label>}
-      <View style={R.actions}>{recorder.file ? <><IconButton name={playback.status.playing ? 'pause' : 'play'} label={playback.status.playing ? 'Pause recording preview' : 'Play recording preview'} onPress={() => void playback.play()} style={R.preview} /><Pressable accessibilityRole="button" accessibilityLabel="Record again" onPress={() => { playback.player.pause(); recorder.discard(); }} style={R.again}><Label>Record again</Label></Pressable></> : <Pressable accessibilityRole="button" accessibilityLabel={recorder.recording ? 'Stop recording' : 'Start recording'} disabled={recorder.busy} accessibilityState={{ disabled: recorder.busy }} onPress={() => recorder.recording ? void recorder.stop() : void recorder.start()} style={R.record}>{recorder.busy ? <ActivityIndicator color={C.white} /> : recorder.recording ? <View style={R.stop} /> : <View style={R.dot} />}</Pressable>}</View>
-      {track && <Pressable accessibilityRole="button" accessibilityLabel="Use recording" onPress={() => { playback.player.pause(); if (recorder.take()) onUse(track); }} style={R.use}><Label style={{ color: C.white, fontFamily: 'RobotoMedium', fontSize: 18 }}>Use recording</Label></Pressable>}
+      <View style={R.actions}>{recorder.file ? <><IconButton name={playback.status.playing ? 'pause' : 'play'} label={playback.status.playing ? 'Pause recording preview' : 'Play recording preview'} onPress={() => void playback.play()} style={R.preview}/><Pressable accessibilityRole="button" accessibilityLabel="Record again" onPress={() => { playback.player.pause(); recorder.discard(); }} style={R.again}><Label>Record again</Label></Pressable></> : <Pressable accessibilityRole="button" accessibilityLabel={recorder.recording ? 'Stop recording' : 'Start recording'} disabled={recorder.busy} accessibilityState={{ disabled: recorder.busy }} onPress={() => recorder.recording ? void recorder.stop() : void recorder.start()} style={R.record}>{recorder.busy ? <ActivityIndicator color={C.white}/> : recorder.recording ? <View style={R.stop}/> : <View style={R.dot}/>}</Pressable>}</View>
+      {track && <Pressable accessibilityRole="button" accessibilityLabel="Use recording" onPress={() => { playback.player.pause(); if (recorder.take())
+        onUse(track); }} style={R.use}><Label style={{ color: C.white, fontFamily: 'RobotoMedium', fontSize: 18 }}>Use recording</Label></Pressable>}
     </View>
   </Sheet>;
 }

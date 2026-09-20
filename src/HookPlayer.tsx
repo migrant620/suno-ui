@@ -15,60 +15,99 @@ import { HookComposer } from './HookComposer';
 import { HookRemix } from './HookRemix';
 import { AudioTrack, clockTime } from './audioData';
 import { Icon, IconButton, IconName, Label, Sheet } from './ui';
-
 export function HookPlayer({ clip, preferences, account, community, library, active, position, onBack, onNext, onPrevious, onSong, onCreator, onRemix, onCreated }: {
-  clip: ExampleHook; preferences: ReturnType<typeof useHookPreferences>; account: ReturnType<typeof useLocalProfile>; community: ReturnType<typeof useCommunity>; library: ReturnType<typeof useLibrary>; active: boolean; position: React.MutableRefObject<Record<string, number>>;
-  onBack: () => void; onNext: () => void; onPrevious: () => void; onSong: (track: AudioTrack) => void; onCreator: () => void; onRemix: (track: AudioTrack, audio: boolean, isActive: () => boolean) => Promise<boolean>; onCreated: (id: string) => void;
+    clip: ExampleHook;
+    preferences: ReturnType<typeof useHookPreferences>;
+    account: ReturnType<typeof useLocalProfile>;
+    community: ReturnType<typeof useCommunity>;
+    library: ReturnType<typeof useLibrary>;
+    active: boolean;
+    position: React.MutableRefObject<Record<string, number>>;
+    onBack: () => void;
+    onNext: () => void;
+    onPrevious: () => void;
+    onSong: (track: AudioTrack) => void;
+    onCreator: () => void;
+    onRemix: (track: AudioTrack, audio: boolean, isActive: () => boolean) => Promise<boolean>;
+    onCreated: (id: string) => void;
 }) {
-  const video = useRef<HookVideoControl>(null); const [state, setState] = useState<HookVideoState>({ playing: false, current: 0, duration: 0, loading: true, error: '' });
-  const [panel, setPanel] = useState<'comments' | 'more' | 'share' | 'save' | 'report' | 'create' | 'remix' | null>(null); const [notice, setNotice] = useState(''); const [busy, setBusy] = useState(false); const [width, setWidth] = useState(1);
-  const wheel = useRef(0); const paging = useRef({ onNext, onPrevious }); paging.current = { onNext, onPrevious };
-  const gesture = useRef(PanResponder.create({
-    onMoveShouldSetPanResponder: (_, movement) => Math.abs(movement.dy) > 12 && Math.abs(movement.dy) > Math.abs(movement.dx),
-    onPanResponderRelease: (_, movement) => { if (Math.abs(movement.dy) > 70) { video.current?.pause(); movement.dy < 0 ? paging.current.onNext() : paging.current.onPrevious(); } },
-    onPanResponderTerminationRequest: () => false,
-  })).current;
-  const liked = preferences.data.liked.includes(clip.id); const following = !!account.profile.followedCreatorIds?.includes(clip.creatorId);
-  const comments = community.data.comments.filter(comment => comment.trackId === clip.id);
-  const openSong = () => { video.current?.pause(); setPanel(null); onSong(clip.track); };
-  const feedback = async (action: () => Promise<boolean>, message: string) => { if (busy) return; setBusy(true); if (await action()) { setNotice(message); setPanel(null); } setBusy(false); };
-  const follow = async () => { if (busy) return; setBusy(true); try { await account.update(current => ({ followedCreatorIds: current.followedCreatorIds?.includes(clip.creatorId) ? current.followedCreatorIds.filter(id => id !== clip.creatorId) : [...(current.followedCreatorIds || []), clip.creatorId] })); } finally { setBusy(false); } };
-  const toggle = () => state.playing ? video.current?.pause() : video.current?.play();
-  useEffect(() => {
-    const back = BackHandler.addEventListener('hardwareBackPress', () => { if (panel) setPanel(null); else onBack(); return true; });
-    return () => back.remove();
-  }, [panel, onBack]);
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
-    const key = (event: KeyboardEvent) => { if (event.key !== 'Escape' || event.isComposing || document.querySelector('[aria-modal="true"]')) return; event.preventDefault(); event.stopImmediatePropagation(); onBack(); };
-    window.addEventListener('keydown', key, true); return () => window.removeEventListener('keydown', key, true);
-  }, [onBack]);
-  const action = (name: IconName, label: string, onPress: () => void, count?: number, color = '#FFFFFF') => <View style={S.sideAction}><IconButton name={name} label={label} size={30} color={color} onPress={onPress} style={{ width: 48, height: 48 }} />{count !== undefined && <Label style={S.count}>{count}</Label>}</View>;
-  const row = (icon: IconName, title: string, onPress: () => void) => <Pressable accessibilityRole="button" accessibilityLabel={title} onPress={onPress} style={S.menuRow}><Icon name={icon} color="#F7F4EF" size={24} /><Label style={S.menuText}>{title}</Label></Pressable>;
-  const seek = (x: number) => video.current?.seek(Math.max(0, Math.min(1, x / width)) * state.duration);
-  return <View style={S.page} testID="hook-player">
-    <HookVideo ref={video} source={clip.video} active={active && !panel} initialTime={position.current[clip.id] || 0} onState={next => { setState(next); position.current[clip.id] = next.current; }} />
-    <LinearGradient pointerEvents="none" colors={['#00000033', 'transparent', '#000000CC']} locations={[0, .5, 1]} style={StyleSheet.absoluteFill} />
-    <View {...gesture.panHandlers} style={[S.mediaTouch, Platform.OS === 'web' && { touchAction: 'none' } as any]}
-      {...(Platform.OS === 'web' ? { onWheel: (event: any) => { if (Math.abs(event.deltaY) < 30 || Date.now() - wheel.current < 450) return; wheel.current = Date.now(); video.current?.pause(); event.deltaY > 0 ? onNext() : onPrevious(); } } : {})}>
-      <Pressable accessibilityRole="button" accessibilityLabel={`${state.playing ? 'Pause' : 'Play'} hook ${clip.track.title}`} onPress={toggle} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }}>{state.loading ? <ActivityIndicator color="#FFFFFF" /> : !state.playing && <Icon name="play" size={52} color="#FFFFFF" />}</Pressable>
+    const video = useRef<HookVideoControl>(null);
+    const [state, setState] = useState<HookVideoState>({ playing: false, current: 0, duration: 0, loading: true, error: '' });
+    const [panel, setPanel] = useState<'comments' | 'more' | 'share' | 'save' | 'report' | 'create' | 'remix' | null>(null);
+    const [notice, setNotice] = useState('');
+    const [busy, setBusy] = useState(false);
+    const [width, setWidth] = useState(1);
+    const wheel = useRef(0);
+    const paging = useRef({ onNext, onPrevious });
+    paging.current = { onNext, onPrevious };
+    const gesture = useRef(PanResponder.create({
+        onMoveShouldSetPanResponder: (_, movement) => Math.abs(movement.dy) > 12 && Math.abs(movement.dy) > Math.abs(movement.dx),
+        onPanResponderRelease: (_, movement) => { if (Math.abs(movement.dy) > 70) {
+            video.current?.pause();
+            movement.dy < 0 ? paging.current.onNext() : paging.current.onPrevious();
+        } },
+        onPanResponderTerminationRequest: () => false,
+    })).current;
+    const liked = preferences.data.liked.includes(clip.id);
+    const following = !!account.profile.followedCreatorIds?.includes(clip.creatorId);
+    const comments = community.data.comments.filter(comment => comment.trackId === clip.id);
+    const openSong = () => { video.current?.pause(); setPanel(null); onSong(clip.track); };
+    const feedback = async (action: () => Promise<boolean>, message: string) => { if (busy)
+        return; setBusy(true); if (await action()) {
+        setNotice(message);
+        setPanel(null);
+    } setBusy(false); };
+    const follow = async () => { if (busy)
+        return; setBusy(true); try {
+        await account.update(current => ({ followedCreatorIds: current.followedCreatorIds?.includes(clip.creatorId) ? current.followedCreatorIds.filter(id => id !== clip.creatorId) : [...(current.followedCreatorIds || []), clip.creatorId] }));
+    }
+    finally {
+        setBusy(false);
+    } };
+    const toggle = () => state.playing ? video.current?.pause() : video.current?.play();
+    useEffect(() => {
+        const back = BackHandler.addEventListener('hardwareBackPress', () => { if (panel)
+            setPanel(null);
+        else
+            onBack(); return true; });
+        return () => back.remove();
+    }, [panel, onBack]);
+    useEffect(() => {
+        if (Platform.OS !== 'web')
+            return;
+        const key = (event: KeyboardEvent) => { if (event.key !== 'Escape' || event.isComposing || document.querySelector('[aria-modal="true"]'))
+            return; event.preventDefault(); event.stopImmediatePropagation(); onBack(); };
+        window.addEventListener('keydown', key, true);
+        return () => window.removeEventListener('keydown', key, true);
+    }, [onBack]);
+    const action = (name: IconName, label: string, onPress: () => void, count?: number, color = '#FFFFFF') => <View style={S.sideAction}><IconButton name={name} label={label} size={30} color={color} onPress={onPress} style={{ width: 48, height: 48 }}/>{count !== undefined && <Label style={S.count}>{count}</Label>}</View>;
+    const row = (icon: IconName, title: string, onPress: () => void) => <Pressable accessibilityRole="button" accessibilityLabel={title} onPress={onPress} style={S.menuRow}><Icon name={icon} color="#F7F4EF" size={24}/><Label style={S.menuText}>{title}</Label></Pressable>;
+    const seek = (x: number) => video.current?.seek(Math.max(0, Math.min(1, x / width)) * state.duration);
+    return <View style={S.page} testID="hook-player">
+    <HookVideo ref={video} source={clip.video} active={active && !panel} initialTime={position.current[clip.id] || 0} onState={next => { setState(next); position.current[clip.id] = next.current; }}/>
+    <LinearGradient pointerEvents="none" colors={['#00000033', 'transparent', '#000000CC']} locations={[0, .5, 1]} style={StyleSheet.absoluteFill}/>
+    <View {...gesture.panHandlers} style={[S.mediaTouch, Platform.OS === 'web' && { touchAction: 'none' } as any]} {...(Platform.OS === 'web' ? { onWheel: (event: any) => { if (Math.abs(event.deltaY) < 30 || Date.now() - wheel.current < 450)
+            return; wheel.current = Date.now(); video.current?.pause(); event.deltaY > 0 ? onNext() : onPrevious(); } } : {})}>
+      <Pressable accessibilityRole="button" accessibilityLabel={`${state.playing ? 'Pause' : 'Play'} hook ${clip.track.title}`} onPress={toggle} style={{ flex: 1, alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }}>{state.loading ? <ActivityIndicator color="#FFFFFF"/> : !state.playing && <Icon name="play" size={52} color="#FFFFFF"/>}</Pressable>
     </View>
-    <Pressable accessibilityRole="button" accessibilityLabel="Create a Hook" onPress={() => setPanel('create')} style={S.create}><Icon name="plus" size={25} color="#FFFFFF" /><Label style={S.createText}>Hook</Label></Pressable>
+    <Pressable accessibilityRole="button" accessibilityLabel="Create a Hook" onPress={() => setPanel('create')} style={S.create}><Icon name="plus" size={25} color="#FFFFFF"/><Label style={S.createText}>Hook</Label></Pressable>
     <View style={S.side}>{action('heart', liked ? 'Unlike this Hook' : 'Like this Hook', () => void preferences.toggleLike(clip.id), liked ? 1 : 0, liked ? '#FF399C' : '#FFFFFF')}{action('comment-processing', 'Hook comments', () => setPanel('comments'), comments.length)}{action('share-variant', 'Share this Hook', () => setPanel('share'))}{action('dots-vertical', 'Hook options', () => setPanel('more'))}</View>
-    <View pointerEvents="box-none" style={S.footer}><View pointerEvents="box-none" style={S.artistRow}><Pressable accessibilityRole="button" accessibilityLabel="View Hook creator" onPress={() => { video.current?.pause(); onCreator(); }} style={S.artist}><Image source={require('../assets/demo-avatar.png')} style={S.avatar} /><Label numberOfLines={1} style={S.artistName}>{clip.creatorName || (clip.creatorId === 'local-profile' ? account.profile.name : 'M620')}</Label></Pressable>{clip.creatorId !== 'local-profile' && <Pressable accessibilityRole="button" accessibilityLabel={following ? 'Unfollow Hook creator locally' : 'Follow Hook creator locally'} disabled={busy} onPress={() => void follow()} style={S.follow}><Label style={S.followText}>{following ? 'Following' : 'Follow'}</Label></Pressable>}</View>
+    <View pointerEvents="box-none" style={S.footer}><View pointerEvents="box-none" style={S.artistRow}><Pressable accessibilityRole="button" accessibilityLabel="View Hook creator" onPress={() => { video.current?.pause(); onCreator(); }} style={S.artist}><Image source={require('../assets/demo-avatar.png')} style={S.avatar}/><Label numberOfLines={1} style={S.artistName}>{clip.creatorName || (clip.creatorId === 'local-profile' ? account.profile.name : 'M620')}</Label></Pressable>{clip.creatorId !== 'local-profile' && <Pressable accessibilityRole="button" accessibilityLabel={following ? 'Unfollow Hook creator locally' : 'Follow Hook creator locally'} disabled={busy} onPress={() => void follow()} style={S.follow}><Label style={S.followText}>{following ? 'Following' : 'Follow'}</Label></Pressable>}</View>
       <Label numberOfLines={2} style={S.caption}>{clip.caption}</Label><Label style={S.disclosure}>Local example Hook · Original art and music</Label>
-      <View style={S.song}><Pressable accessibilityRole="button" accessibilityLabel="Go to Full Song" onPress={openSong} style={S.songInfo}><Image source={clip.track.cover} style={S.cover} /><View style={{ flex: 1 }}><Label numberOfLines={1} style={S.songTitle}>{clip.track.title}</Label><View style={{ flexDirection: 'row', alignItems: 'center' }}><Icon name="play" size={12} color="#AAAAB0" /><Label style={S.songCount}>{clip.track.plays || 0}</Label></View></View></Pressable><IconButton name="playlist-plus" label="Save Hook song to playlist" color="#FFFFFF" size={24} onPress={() => setPanel('save')} style={S.save} /><Pressable accessibilityRole="button" accessibilityLabel="Remix Hook song" onPress={() => setPanel('remix')} style={S.remix}><Icon name="autorenew" color="#FFFFFF" size={20} /><Label style={S.remixText}>Remix</Label></Pressable></View>
+      <View style={S.song}><Pressable accessibilityRole="button" accessibilityLabel="Go to Full Song" onPress={openSong} style={S.songInfo}><Image source={clip.track.cover} style={S.cover}/><View style={{ flex: 1 }}><Label numberOfLines={1} style={S.songTitle}>{clip.track.title}</Label><View style={{ flexDirection: 'row', alignItems: 'center' }}><Icon name="play" size={12} color="#AAAAB0"/><Label style={S.songCount}>{clip.track.plays || 0}</Label></View></View></Pressable><IconButton name="playlist-plus" label="Save Hook song to playlist" color="#FFFFFF" size={24} onPress={() => setPanel('save')} style={S.save}/><Pressable accessibilityRole="button" accessibilityLabel="Remix Hook song" onPress={() => setPanel('remix')} style={S.remix}><Icon name="autorenew" color="#FFFFFF" size={20}/><Label style={S.remixText}>Remix</Label></Pressable></View>
     </View>
-    <View accessible accessibilityRole="adjustable" accessibilityLabel="Hook playback position" accessibilityValue={{ min: 0, max: state.duration, now: state.current, text: clockTime(state.current) }} accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]} onAccessibilityAction={event => video.current?.seek(state.current + (event.nativeEvent.actionName === 'increment' ? 5 : -5))} onLayout={event => setWidth(event.nativeEvent.layout.width)} onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true} onResponderGrant={event => seek(event.nativeEvent.locationX)} onResponderMove={event => seek(event.nativeEvent.locationX)}
-      {...(Platform.OS === 'web' ? { tabIndex: 0, onKeyDown: (event: any) => { if (['ArrowLeft', 'ArrowRight'].includes(event.key)) { event.preventDefault(); video.current?.seek(state.current + (event.key === 'ArrowRight' ? 5 : -5)); } } } : {})} style={S.progressTouch}><View style={S.progress}><View style={{ height: 2, backgroundColor: '#FFFFFF', width: `${state.duration ? Math.min(100, state.current / state.duration * 100) : 0}%` }} /></View></View>
-    {!!(state.error || preferences.error || account.error || notice) && <View style={S.feedback}><Label accessibilityLiveRegion="polite" style={{ color: '#FFFFFF', fontSize: 12 }}>{state.error || preferences.error || account.error || notice}</Label>{!!notice && <IconButton name="close" label="Dismiss Hook feedback" color="#FFFFFF" onPress={() => setNotice('')} />}</View>}
-    {panel === 'comments' && <Comments timestamps={false} track={{ ...clip.track, id: clip.id }} currentTime={state.current} author={account.profile.name} community={community} onSeek={seconds => { video.current?.seek(seconds); setPanel(null); }} onClose={() => setPanel(null)} />}
-    {panel === 'share' && <HookShare clip={clip} creator={clip.creatorName || (clip.creatorId === 'local-profile' ? account.profile.name : 'M620')} onClose={() => setPanel(null)} />}
-    {panel === 'save' && <AddToPlaylist track={clip.track} library={library} onClose={() => setPanel(null)} />}
-    {panel === 'create' && <HookComposer library={library} preferences={preferences} onCreated={id => { setPanel(null); onCreated(id); }} onClose={() => setPanel(null)} />}
-    {panel === 'more' && <Sheet compact onClose={() => setPanel(null)} backgroundColor="#101012" handleColor="#C2C2C1"><View style={S.summary}><Image source={clip.track.cover} style={{ width: 60, height: 80, borderRadius: 12 }} /><View style={{ flex: 1 }}><Label style={{ color: '#FFFFFF', fontSize: 18 }}>{clip.track.title}</Label><Label style={{ color: '#BBBBBF', fontSize: 16 }}>by {clip.creatorName || (clip.creatorId === 'local-profile' ? account.profile.name : 'M620')}</Label></View></View><View style={S.menu}>{row('music-note', 'Go to Full Song', openSong)}{row('minus', 'Hide Creator', () => void feedback(() => preferences.hideCreator(clip.creatorId), 'Creator hidden in this local demo.'))}{row('thumb-down', 'Not Interested', () => void feedback(() => preferences.skip(clip.id), 'Hook hidden in this local demo.'))}{row('flag', 'Report Inappropriate', () => setPanel('report'))}</View><Label style={S.menuDisclosure}>Preferences and reports stay on this device.</Label></Sheet>}
+    <View accessible accessibilityRole="adjustable" accessibilityLabel="Hook playback position" accessibilityValue={{ min: 0, max: state.duration, now: state.current, text: clockTime(state.current) }} accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]} onAccessibilityAction={event => video.current?.seek(state.current + (event.nativeEvent.actionName === 'increment' ? 5 : -5))} onLayout={event => setWidth(event.nativeEvent.layout.width)} onStartShouldSetResponder={() => true} onMoveShouldSetResponder={() => true} onResponderGrant={event => seek(event.nativeEvent.locationX)} onResponderMove={event => seek(event.nativeEvent.locationX)} {...(Platform.OS === 'web' ? { tabIndex: 0, onKeyDown: (event: any) => { if (['ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            event.preventDefault();
+            video.current?.seek(state.current + (event.key === 'ArrowRight' ? 5 : -5));
+        } } } : {})} style={S.progressTouch}><View style={S.progress}><View style={{ height: 2, backgroundColor: '#FFFFFF', width: `${state.duration ? Math.min(100, state.current / state.duration * 100) : 0}%` }}/></View></View>
+    {!!(state.error || preferences.error || account.error || notice) && <View style={S.feedback}><Label accessibilityLiveRegion="polite" style={{ color: '#FFFFFF', fontSize: 12 }}>{state.error || preferences.error || account.error || notice}</Label>{!!notice && <IconButton name="close" label="Dismiss Hook feedback" color="#FFFFFF" onPress={() => setNotice('')}/>}</View>}
+    {panel === 'comments' && <Comments timestamps={false} track={{ ...clip.track, id: clip.id }} currentTime={state.current} author={account.profile.name} community={community} onSeek={seconds => { video.current?.seek(seconds); setPanel(null); }} onClose={() => setPanel(null)}/>}
+    {panel === 'share' && <HookShare clip={clip} creator={clip.creatorName || (clip.creatorId === 'local-profile' ? account.profile.name : 'M620')} onClose={() => setPanel(null)}/>}
+    {panel === 'save' && <AddToPlaylist track={clip.track} library={library} onClose={() => setPanel(null)}/>}
+    {panel === 'create' && <HookComposer library={library} preferences={preferences} onCreated={id => { setPanel(null); onCreated(id); }} onClose={() => setPanel(null)}/>}
+    {panel === 'more' && <Sheet compact onClose={() => setPanel(null)} backgroundColor="#101012" handleColor="#C2C2C1"><View style={S.summary}><Image source={clip.track.cover} style={{ width: 60, height: 80, borderRadius: 12 }}/><View style={{ flex: 1 }}><Label style={{ color: '#FFFFFF', fontSize: 18 }}>{clip.track.title}</Label><Label style={{ color: '#BBBBBF', fontSize: 16 }}>by {clip.creatorName || (clip.creatorId === 'local-profile' ? account.profile.name : 'M620')}</Label></View></View><View style={S.menu}>{row('music-note', 'Go to Full Song', openSong)}{row('minus', 'Hide Creator', () => void feedback(() => preferences.hideCreator(clip.creatorId), 'Creator hidden in this local demo.'))}{row('thumb-down', 'Not Interested', () => void feedback(() => preferences.skip(clip.id), 'Hook hidden in this local demo.'))}{row('flag', 'Report Inappropriate', () => setPanel('report'))}</View><Label style={S.menuDisclosure}>Preferences and reports stay on this device.</Label></Sheet>}
     {panel === 'report' && <Sheet compact onClose={() => setPanel('more')} backgroundColor="#1C1C1F"><Label style={S.menuHeading}>Report Inappropriate</Label><Label style={S.menuDisclosure}>Choose a reason to save a local report. Nothing is sent to Suno.</Label>{['Spam', 'Harassment', 'Other'].map(reason => row('flag-outline', `Save local report: ${reason}`, () => void feedback(() => preferences.report(clip.id, reason), 'Local report saved. Nothing was sent to Suno.')))}</Sheet>}
-    {panel === 'remix' && <HookRemix track={clip.track} library={library} onClose={() => setPanel(null)} onAdvanced={(track, isActive) => { video.current?.pause(); return onRemix(track, true, isActive); }} onCreated={track => { setPanel(null); video.current?.pause(); onSong(track); }} />}
+    {panel === 'remix' && <HookRemix track={clip.track} library={library} onClose={() => setPanel(null)} onAdvanced={(track, isActive) => { video.current?.pause(); return onRemix(track, true, isActive); }} onCreated={track => { setPanel(null); video.current?.pause(); onSong(track); }}/>}
   </View>;
 }
 const S = StyleSheet.create({ page: { flex: 1, backgroundColor: '#000000' }, mediaTouch: { position: 'absolute', top: 56, bottom: 174, left: 0, right: 56, alignItems: 'center', justifyContent: 'center' }, create: { position: 'absolute', right: 16, top: 12, height: 40, paddingHorizontal: 16, borderRadius: 99, borderWidth: 1, borderColor: '#FFFFFF15', backgroundColor: '#101012', flexDirection: 'row', gap: 8, alignItems: 'center' }, createText: { color: '#FFFFFF', fontSize: 16 }, side: { position: 'absolute', right: 8, bottom: 85 }, sideAction: { alignItems: 'center', minHeight: 52 }, count: { color: '#FFFFFF', fontSize: 12, lineHeight: 16, marginTop: -4, marginBottom: 4 }, footer: { position: 'absolute', bottom: 16, left: 16, right: 16 }, artistRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginRight: 52 }, artist: { flexDirection: 'row', gap: 8, alignItems: 'center', minHeight: 32, flexShrink: 1 }, avatar: { width: 28, height: 28, borderRadius: 99 }, artistName: { color: '#FFFFFF', fontSize: 16, lineHeight: 20, fontFamily: 'RobotoMedium', flexShrink: 1 }, follow: { borderWidth: 1, borderColor: '#FFFFFF', borderRadius: 8, paddingHorizontal: 8, minHeight: 28, justifyContent: 'center' }, followText: { color: '#FFFFFF', fontSize: 12, lineHeight: 16, fontFamily: 'RobotoMedium' }, caption: { fontSize: 14, lineHeight: 20, color: '#FFFFFF', marginTop: 6, marginRight: 36 }, disclosure: { color: '#B3B3B8', fontSize: 9, lineHeight: 12, marginTop: 2, marginBottom: 8 }, song: { height: 64, borderRadius: 24, borderWidth: 1, borderColor: '#FFFFFF20', backgroundColor: '#252529E8', flexDirection: 'row', gap: 8, alignItems: 'center', padding: 8 }, songInfo: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48 }, cover: { width: 44, height: 44, borderRadius: 12 }, songTitle: { color: '#FFFFFF', fontSize: 12, lineHeight: 16, fontFamily: 'RobotoMedium' }, songCount: { color: '#AAAAB0', fontSize: 12, lineHeight: 16 }, save: { width: 44, height: 44, borderRadius: 16, backgroundColor: '#FFFFFF06' }, remix: { flexDirection: 'row', alignItems: 'center', gap: 4, height: 44, paddingHorizontal: 10, borderRadius: 16, backgroundColor: '#FFFFFF06' }, remixText: { color: '#FFFFFF', fontSize: 14 }, progressTouch: { position: 'absolute', height: 16, bottom: 0, left: 0, right: 0, justifyContent: 'flex-end' }, progress: { height: 2, backgroundColor: '#777777', width: '100%' }, feedback: { position: 'absolute', top: 64, left: 16, right: 16, backgroundColor: '#333333EE', borderRadius: 12, paddingLeft: 12, flexDirection: 'row', alignItems: 'center' }, summary: { paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 12, paddingBottom: 16 }, menu: { marginHorizontal: 16, borderRadius: 12, overflow: 'hidden', backgroundColor: '#1C1C1F' }, menuRow: { minHeight: 56, paddingHorizontal: 16, gap: 16, flexDirection: 'row', alignItems: 'center' }, menuText: { color: '#F7F4EF', fontSize: 16 }, menuHeading: { color: '#FFFFFF', fontSize: 18, textAlign: 'center', marginBottom: 16 }, menuDisclosure: { color: '#99999F', fontSize: 11, lineHeight: 16, margin: 16, textAlign: 'center' } });
