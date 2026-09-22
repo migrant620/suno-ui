@@ -23,10 +23,14 @@
         {
           "supportedLocales": {
             "android": [
-              "en"
+              "en",
+              "de",
+              "es"
             ],
             "ios": [
-              "en"
+              "en",
+              "de",
+              "es"
             ]
           }
         }
