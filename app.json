@@ -25,12 +25,16 @@
             "android": [
               "en",
               "de",
-              "es"
+              "es",
+              "fr",
+              "ja"
             ],
             "ios": [
               "en",
               "de",
-              "es"
+              "es",
+              "fr",
+              "ja"
             ]
           }
         }
