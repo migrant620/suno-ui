@@ -85,6 +85,10 @@ npm run build:web
 
 The static output is written to `dist/`. Serve that directory over HTTP or HTTPS; opening `index.html` directly as a local file is not supported. Camera and microphone features depend on browser permissions and a secure context, such as HTTPS or localhost.
 
+## Demo build
+
+The published demo at <https://suno-ui.edgeone.cool> is built from this repository. It was last rebuilt and redeployed on 2026-09-25 (EdgeOne deployment `dp0wxqqi5yq0`, source revision `2038da1b`).
+
 ## Scope and limitations
 
 - **Mobile layout on the web.** At wider viewport sizes, the interface remains a centred column up to 480 CSS pixels wide. It is not a separate desktop dashboard.
