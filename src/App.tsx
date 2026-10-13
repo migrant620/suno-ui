@@ -403,7 +403,10 @@ const styles = (C: ThemeColors) => StyleSheet.create({
   loading: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: C.surface },
   desktop: { flex: 1, backgroundColor: '#222126', alignItems: 'center' },
   app: { flex: 1, width: '100%', maxWidth: 480, backgroundColor: C.surface, overflow: 'hidden' },
-  simpleCard: { flex: 1, marginHorizontal: 16, borderWidth: 1, borderColor: C.surface === '#101012' ? '#FFFFFF20' : '#1010121A', borderRadius: 20, padding: 15, paddingBottom: 3 },  // +1dp border = 16 from the card edge
+  // R21: the reference paints its first chip row at dp 160..169 while ours rendered at
+  // 139.5..156.5, so the whole composer stack needs +21 dp of leading space. Padding 15
+  // alone put it 21 dp short.
+  simpleCard: { flex: 1, marginHorizontal: 16, borderWidth: 1, borderColor: C.surface === '#101012' ? '#FFFFFF20' : '#1010121A', borderRadius: 20, padding: 15, paddingTop: 36, paddingBottom: 3 },  // +1dp border = 16 from the card edge
   addTarget: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   addCircle: { position: 'absolute', width: 40, height: 40, borderRadius: 999, backgroundColor: C.surface === '#101012' ? '#FFFFFF08' : '#1010120A' },
   help: { position: 'absolute', right: 3, bottom: 3 },
