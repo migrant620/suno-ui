@@ -71,7 +71,7 @@ function LibraryContent({ route, onRoute, onCreate, onReuse, library, player, on
         <View style={view === 'grid' ? { padding: 4, paddingTop: 8 } : { flex: 1 }}><Label style={{ fontSize: 14 }} numberOfLines={2}>{p.name}</Label>{p.id !== 'new' && p.id !== 'liked' && <Label style={L.metadata}>Demo listener</Label>}</View>
       </Pressable>)}</ScrollView> : <View style={L.center}><Label style={{ color: C.disabled }}>No playlists saved yet</Label></View>}
     </> : <>
-      <View style={L.header}><Label style={[L.title, { letterSpacing: 1.05 }]}>Library</Label><View style={{ flex: 1 }} /><IconButton name="magnify" label="Search" onPress={() => { setQuery(''); onRoute('search'); }} circle={C.field} style={{ marginTop: -8 }} /></View>
+      <View style={L.header}><Label style={[L.title, { letterSpacing: 0.4 }]}>Library</Label><View style={{ flex: 1 }} /><IconButton name="magnify" label="Search" onPress={() => { setQuery(''); onRoute('search'); }} circle={C.field} style={{ marginTop: -8 }} /></View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={L.categories}>
         <Pressable accessibilityRole="button" accessibilityLabel="Liked" onPress={() => openLiked('home')} style={L.category}><Image source={likedArt} style={L.categoryImage} /><View style={L.categoryIcon}><Icon name="thumb-up" size={56} color="#B8DEEF" /></View><Label style={L.categoryTitle}>Liked</Label></Pressable>
         <Pressable accessibilityRole="button" accessibilityLabel="Playlists" onPress={() => onRoute('playlists')} style={L.category}><Image source={require('../assets/playlists-cover.png')} style={L.categoryImage} /><Label style={L.categoryTitle}>Playlists</Label></Pressable>
