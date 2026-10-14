@@ -4,7 +4,7 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { AudioTrack, clockTime } from './audioData';
 import { C, Icon, IconButton, Label } from './ui';
 
-export function SongRow({ track, playing, onPress, onOptions, variant }: {
+function SongRowImpl({ track, playing, onPress, onOptions, variant }: {
   track: AudioTrack; playing: boolean; onPress: () => void; onOptions: () => void; variant?: 'search';
 }) {
   const C = useSurfaceColors(); const R = styles(C);
@@ -21,6 +21,8 @@ export function SongRow({ track, playing, onPress, onOptions, variant }: {
     <IconButton name="dots-vertical" label={`Options for ${track.title}`} onPress={onOptions} size={24} style={{ width: 32, height: 48 }} />
   </View>;
 }
+
+export const SongRow = React.memo(SongRowImpl);
 
 const styles = (C: ThemeColors) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', minHeight: 72, paddingHorizontal: 16 },
