@@ -73,13 +73,15 @@ const DRAFT_KEY = 'suno-ui:local-draft:v1';
 const suggestions = [['flute', 'male voice', 'piano', 'synthwave'], ['japanese', 'rap', 'dreamy', 'acoustic'], ['ambient', 'indie folk', 'warm bass', 'jazz']];
 type Overlay = 'add' | 'create-options' | 'audio' | 'voice' | 'model' | 'model-offer' | 'upgrade' | 'help' | 'record' | 'generation' | null;
 
-export default function App() {
+// R23: memoize the root; the host gets stable props, so this is a pure perf
+// win and leaves the rendered screens identical.
+export default React.memo(function App() {
   const [fontsLoaded, fontError] = useFonts({ InstrumentSerif: require('../assets/fonts/InstrumentSerif-Regular.ttf'), RobotoRegular: require('../assets/fonts/Roboto_400Regular.ttf'), RobotoMedium: require('../assets/fonts/Roboto_500Medium.ttf'), RobotoBold: require('../assets/fonts/Roboto_700Bold.ttf') });
   return <GestureHandlerRootView style={{ flex: 1 }}><SafeAreaProvider><ThemeProvider>
     <StatusBar style="dark" />
     {fontsLoaded ? <LocalSession><CreationApp /></LocalSession> : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: C.surface }}>{fontError ? <Label>Font loading failed. Reload to retry.</Label> : <ActivityIndicator color={C.ink} />}</View>}
   </ThemeProvider></SafeAreaProvider></GestureHandlerRootView>;
-}
+});
 
 function CreationApp() {
   const theme = useTheme();
