@@ -325,7 +325,7 @@ function CreationApp() {
       <StatusBar style={(tab === 'hooks' && !hookCollectionId && !hookCreator && !searchNotifications) || theme.dark ? 'light' : 'dark'} />
       <View style={{ flex: 1 }}><View style={{ flex: 1 }} pointerEvents={searchNotifications ? 'none' : 'auto'} importantForAccessibility={searchNotifications ? 'no-hide-descendants' : 'auto'} aria-hidden={searchNotifications}>
       {tab === 'create' ? <>
-        <CreateHeader modelOpen={overlay === 'model'} mode={state.mode} model={entitlements.data.model} freePlan={entitlements.ready && entitlements.data.plan === 'Free'} promotion={promotion} onMode={switchMode} onModel={() => { Keyboard.dismiss(); setOverlay('model'); }} onOffer={() => { Keyboard.dismiss(); setOverlay('upgrade'); }} />
+        <CreateHeader modelOpen={overlay === 'model'} mode={state.mode} model={entitlements.data.model} freePlan={entitlements.ready && entitlements.data.plan === 'Free'} promotion={promotion} onMode={switchMode} onModel={() => { Keyboard.dismiss(); setOverlay('model'); }} onOffer={() => { Keyboard.dismiss(); promotion.start(); setOverlay('upgrade'); }} />
         {state.mode === 'Simple' ? <View style={A.simpleCard}>
           <View style={A.chips}>
             <View ref={addAnchor} collapsable={false} style={A.addTarget}><View pointerEvents="none" style={A.addCircle} /><IconButton name="plus" label="Add to Song" onPress={() => { Keyboard.dismiss(); setOverlay('add'); }} /></View>
@@ -381,7 +381,7 @@ function CreationApp() {
     {globalSongReport && <SongReport track={globalSongReport} onClose={() => setGlobalSongReport(null)} onSaved={() => setGlobalSongReport(null)} />}
     {globalSharing && <PlaylistShare tracks={[globalSharing]} playlist={{ id: 'shared-song', name: globalSharing.title, description: 'Local example song', songIds: [globalSharing.id], isPublic: false, createdAt: 0 }} onClose={() => setGlobalSharing(null)} />}
     {overlay === 'model' && <ThemedSurface><CreateModelMenu model={entitlements.data.model} onClose={() => setOverlay(null)} onSelect={model => { if (model !== 'v6-mini' && entitlements.data.plan === 'Free') setOverlay('model-offer'); else void entitlements.selectModel(model).then(() => setOverlay(null)).catch(() => setNotice('The model selection could not be saved. Try again.')); }} /></ThemedSurface>}
-    {overlay === 'model-offer' && <ModelOffer onClose={() => setOverlay(null)} onUpgrade={() => setOverlay('upgrade')} />}
+    {overlay === 'model-offer' && <ModelOffer onClose={() => setOverlay(null)} onUpgrade={() => { promotion.start(); setOverlay('upgrade'); }} />}
     {overlay === 'upgrade' && <SubscriptionFlow initialRoute="plans" entitlements={entitlements} onClose={() => setOverlay(null)} />}
     {voiceDetail && <LightSurface><VoiceDetails voice={voiceDetail} creator={voiceDetail.local ? ownCreator : creatorById(voiceDetail.creatorId)!} ownVoice={ownVoices.voices.find(voice => voice.id === voiceDetail.id)} account={account} songs={library.tracks} player={libraryPlayer} onClose={() => setVoiceDetail(null)} onUse={() => { audioPlayback.player.pause(); libraryPlayer.player.pause(); dispatch({ type: 'voice', id: voiceDetail.id }); setVoiceDetail(null); setTab('create'); }} onCreator={() => { if (voiceDetail.local) { setVoiceDetail(null); setTab('profile'); return; } if (tab === 'profile') { setVoiceDetail(null); return; } setCreatorTarget(creatorById(voiceDetail.creatorId)!); setCreatorOpen(true); setVoiceDetail(null); setTab('search'); }} onSongOptions={setGlobalSongOptions} /></LightSurface>}
     {overlay === 'voice' && <LightSurface><Voice canCreate={ownVoices.ready} onCreate={async (track, isActive) => { const voice = await ownVoices.create(track, isActive); if (isActive()) { dispatch({ type: 'voice', id: voice.id }); setOverlay(null); setTab('create'); setNotice('Local Voice saved to your profile. No voice model was trained.'); } }} ownerName={account.profile.handle || account.profile.name} songs={library.songs} publicSongs={library.songs.filter(track => library.data.songs?.find(song => song.id === track.id)?.isPublic)} likedSongs={library.tracks.filter(track => library.data.likedIds?.includes(track.id))} onClose={() => setOverlay(null)} onUse={track => { selectAudio(track); setOverlay(null); setNotice('Voice sample attached as local audio. Voice cloning is not connected.'); }} /></LightSurface>}
@@ -408,7 +408,10 @@ const styles = (C: ThemeColors) => StyleSheet.create({
   // R21: the reference paints its first chip row at dp 160..169 while ours rendered at
   // 139.5..156.5, so the whole composer stack needs +21 dp of leading space. Padding 15
   // alone put it 21 dp short.
-  simpleCard: { flex: 1, marginHorizontal: 16, borderWidth: 1, borderColor: C.surface === '#101012' ? '#FFFFFF20' : '#1010121A', borderRadius: 20, padding: 15, paddingTop: 36, paddingBottom: 3 },  // +1dp border = 16 from the card edge
+  // R26: the device's card runs its content from 96.1 dp - its own 80.1 dp top, the 1 dp border and
+  // then the same 15 dp the other three edges use. This copy reserved 36 dp at the top instead, which
+  // is where the 20.8 dp the chip row sat below the capture came from.
+  simpleCard: { flex: 1, marginHorizontal: 16, borderWidth: 1, borderColor: C.surface === '#101012' ? '#FFFFFF20' : '#1010121A', borderRadius: 20, padding: 15, paddingTop: 15, paddingBottom: 3 },  // +1dp border = 16 from the card edge
   addTarget: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   addCircle: { position: 'absolute', width: 40, height: 40, borderRadius: 999, backgroundColor: C.surface === '#101012' ? '#FFFFFF08' : '#1010120A' },
   help: { position: 'absolute', right: 3, bottom: 3 },
