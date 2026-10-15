@@ -73,10 +73,12 @@ export function Pill({ title, icon, onPress, active, onRemove }: {
  * box diagonal - measured, it lands the fill about 0.18 of the ramp further along at the
  * left edge, which put 60 units of error back on the first third. Horizontal is exact.
  */
-const ACCENT_STOPS = ['#FD8D1F', '#FD492B', '#FD2068', '#FD2068', '#FD492B', '#FD492B'] as const;
-const ACCENT_LOCATIONS = [0, 0.15, 0.28, 0.61, 0.71, 1] as const;
+// Typed as non-empty tuples: expo-linear-gradient's props demand at least two stops, so a
+// plain `string[]` (which is what `as const` widens to under `as unknown as`) does not fit.
+const ACCENT_STOPS: readonly [string, string, ...string[]] = ['#FD8D1F', '#FD492B', '#FD2068', '#FD2068', '#FD492B', '#FD492B'];
+const ACCENT_LOCATIONS: readonly [number, number, ...number[]] = [0, 0.15, 0.28, 0.61, 0.71, 1];
 export function Accent({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
-  return <LinearGradient colors={ACCENT_STOPS as unknown as string[]} locations={ACCENT_LOCATIONS as unknown as number[]} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={[{ overflow: 'hidden' }, style]}>{children}</LinearGradient>;
+  return <LinearGradient colors={ACCENT_STOPS} locations={ACCENT_LOCATIONS} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={[{ overflow: 'hidden' }, style]}>{children}</LinearGradient>;
 }
 export function Sheet({ children, onClose, compact = false, onShow, backgroundColor, backdrop, keyboardAvoiding = false, handleColor, handleHeight, handlePaddingTop }: { children: React.ReactNode; onClose: () => void; compact?: boolean; onShow?: () => void; backgroundColor?: string; backdrop?: React.ReactNode; keyboardAvoiding?: boolean; handleColor?: string; handleHeight?: number; handlePaddingTop?: number }) {
   const sheetRoot = React.useRef<View>(null);

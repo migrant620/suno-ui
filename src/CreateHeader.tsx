@@ -34,7 +34,7 @@ const H = StyleSheet.create({
   header: { marginHorizontal: 16, zIndex: 1 },
   row: { height: 64, alignItems: 'center', justifyContent: 'center' },
   mode: { flexDirection: 'row', alignItems: 'center', gap: 0, height: 48 },  // measured target = text + 20dp chevron box
-  modeText: { fontFamily: 'RobotoMedium', fontSize: 18.5, lineHeight: 22 },  // Simple 55.7 / Advanced 82.2 dp measured widths
+  modeText: { fontFamily: 'RobotoMedium', fontSize: 18.5, lineHeight: 22, letterSpacing: -0.3 },  // Simple 55.7 / Advanced 82.2 dp measured widths
   model: { position: 'absolute', top: 8, right: 0, width: 93, height: 48, paddingLeft: 16, paddingRight: 12, flexDirection: 'row', alignItems: 'center', gap: 0 },
   modelBorder: { borderWidth: 1, borderRadius: 24 },
   modelText: { fontFamily: 'RobotoRegular', fontSize: 13, lineHeight: 15, flexShrink: 0 },  // measured 41dp label width matches Regular, not Medium
