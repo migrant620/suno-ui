@@ -338,7 +338,10 @@ function CreationApp() {
             {!audio && <Pill title="Audio" icon="waveform" onPress={() => { audioPlayback.player.pause(); setOverlay('audio'); }} />}
           </View>
           <TextInput accessibilityLabel="Song description" multiline value={state.prompt} onChangeText={value => dispatch({ type: 'field', field: 'prompt', value })} style={[A.input, { flex: 1, marginTop: 8 }]} placeholder={media.draft?.kind === 'images' ? 'Take my vacation photo and turn into a song' : media.draft?.kind === 'videos' ? 'Turn my night out video into an anthem' : 'An acoustic love song'} placeholderTextColor={theme.dark ? '#766964' : C.disabled} selectionColor={C.primary} />
-          <IconButton name="help-circle" label="Learn what Create can do" onPress={() => setOverlay('help')} style={A.help} color={theme.dark ? C.handle : '#191C1E'} />
+          <IconButton name="help-circle" label="Learn what Create can do" onPress={() => setOverlay('help')} style={A.help} /* The help glyph reads (91,91,98) on both S1 and S2 - a greyed icon, not the
+             near-black #191C1E it was painted with (dist 113.8, the largest single ink error on
+             this app). Measured 2026-10-15 off the reference at [325, 589.9, 48, 48]. */
+          color={theme.dark ? C.handle : '#5B5B62'} />
         </View> : <ScrollView style={{ flex: 1 }} contentContainerStyle={A.advancedContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {mediaChip && <View style={{ alignSelf: 'flex-start' }}>{mediaChip}</View>}
           {(!audio || !selectedVoice) && <View style={{ flexDirection: 'row', gap: 8 }}>{!audio && <Pressable accessibilityRole="button" onPress={() => setOverlay('audio')} style={A.attachment}><Icon name="plus" size={24} /><Label>Audio</Label></Pressable>}{!selectedVoice && <Pressable accessibilityRole="button" onPress={() => openVoice()} style={A.attachment}><Icon name="plus" size={24} /><Label>Voice</Label></Pressable>}</View>}
