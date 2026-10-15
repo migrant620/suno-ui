@@ -352,7 +352,20 @@ function CreationApp() {
         </ScrollView>}
 
         <View style={[A.createRow, state.mode === 'Advanced' && { marginTop: 0 }]}>
-          {hasDraft && <IconButton name="delete" label="Clear all" disabled={mediaBusy} onPress={() => void clearDraft()} style={A.clear} />}
+          {/*
+            R29: this slot has to exist whether or not there is a draft. The reference draws a
+            56 dp disc at x16..72 in BOTH captures and puts the Create bar at x80..377, a fixed
+            297 dp wide. Dropping the disc whenever the draft was empty let the flex:1 button
+            swallow it: on the idle capture the bar ran x15..378 (361 dp), so it painted the
+            accent gradient over the neighbouring control (slot median 253,107,39 where the
+            reference reads 151,145,143), sat 66 dp too wide and slid the "Create" label 32.4 dp
+            left. The slot is now unconditional, so the bar keeps its 297 dp and its gradient
+            sweep in both states.
+          */}
+          {/* `disabled` would repaint the glyph in C.disabled (186,181,198); the reference's
+              glyph is the dark 16,16,18 it carries in the typed capture as well, so the slot is
+              left enabled and the press is guarded instead. */}
+          <IconButton name="delete" label="Clear all" disabled={mediaBusy} onPress={() => { if (hasDraft) void clearDraft(); }} style={A.clear} />
           <Pressable accessibilityRole="button" accessibilityLabel="Create" disabled={!canCreate} accessibilityState={{ disabled: !canCreate }} onPress={() => setOverlay('generation')} style={{ flex: 1 }}>
             {/* The reference does not dim this button when there is nothing to generate: it paints the
                 same pink gradient and the same white label in the typed and the idle state (sampled
