@@ -55,8 +55,26 @@ export function Pill({ title, icon, onPress, active, onRemove }: {
     </View>
   </Pressable>;
 }
+/**
+ * The brand accent fill.
+ *
+ * R29 measured this against the capture for the first time. The bar is x80..377 x
+ * y657.7..714; sampling the two rows that miss the "Create" glyph (y668 and y704) gives
+ * a fill that runs  orange -> coral -> pink -> holds pink -> back to coral:
+ *
+ *   t = (x-80)/297 :  0.00 (253,116,26)  0.16 (253,73,43)  0.32 (253,28,110)
+ *                     0.61 (253,28,110)  0.72 (253,73,43)  1.00 (253,80,40)
+ *
+ * The old fill ran the other way round - pink at the left edge, amber at the right - so
+ * the ends disagreed by 130 and 100 colour units and the mean over the cut was 70..119.
+ * The stops below are those six samples. The reference also progresses slightly faster
+ * towards the bottom (~0.05 of t across the 56 dp height), which is what the diagonal
+ * start/end below reproduces; a purely horizontal sweep leaves about 15 units.
+ */
+const ACCENT_STOPS = ['#FD741A', '#FD492B', '#FD1C6E', '#FD1C6E', '#FD492B', '#FD5028'] as const;
+const ACCENT_LOCATIONS = [0, 0.16, 0.32, 0.61, 0.72, 1] as const;
 export function Accent({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
-  return <LinearGradient colors={[C.primary, '#FF176C', C.orange, '#FFB000']} start={{ x: 0.1, y: 0 }} end={{ x: 0.9, y: 1 }} style={[{ overflow: 'hidden' }, style]}>{children}</LinearGradient>;
+  return <LinearGradient colors={ACCENT_STOPS as unknown as string[]} locations={ACCENT_LOCATIONS as unknown as number[]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[{ overflow: 'hidden' }, style]}>{children}</LinearGradient>;
 }
 export function Sheet({ children, onClose, compact = false, onShow, backgroundColor, backdrop, keyboardAvoiding = false, handleColor, handleHeight, handlePaddingTop }: { children: React.ReactNode; onClose: () => void; compact?: boolean; onShow?: () => void; backgroundColor?: string; backdrop?: React.ReactNode; keyboardAvoiding?: boolean; handleColor?: string; handleHeight?: number; handlePaddingTop?: number }) {
   const sheetRoot = React.useRef<View>(null);
