@@ -10,7 +10,7 @@ export const tokens = {
     "placeholder": "#C9C6C1",
     "disabled": "#A3A3A3",
     "primary": "#FF399C",
-    "orange": "#FF702C",
+    "orange": "#FE7325",
     "blue": "#0089FF",
     "white": "#FFFFFF",
     "border": "#C5BDBD"
