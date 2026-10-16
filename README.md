@@ -87,7 +87,7 @@ The static output is written to `dist/`. Serve that directory over HTTP or HTTPS
 
 ## Demo build
 
-The published demo at <https://suno-ui.edgeone.cool> is built from this repository. It was last rebuilt and redeployed on 2026-10-16 (EdgeOne deployment `dprnnhh2o3wc`, source revision `12b804ad`).
+The published demo at <https://suno-ui.edgeone.cool> is built from this repository. It was last rebuilt and redeployed on 2026-10-16 (EdgeOne deployment `dpqaz6wxn2x6`, source revision `83eb8ed3`).
 
 ## Scope and limitations
 

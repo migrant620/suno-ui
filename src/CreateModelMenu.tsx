@@ -29,7 +29,7 @@ const M = StyleSheet.create({
   menu: { position: 'absolute', right: 16, borderRadius: 8, paddingVertical: 8, overflow: 'hidden', boxShadow: '0px 3px 7px #00000033' },
   row: { minHeight: 65.5, paddingHorizontal: 12, paddingVertical: 10.5, flexDirection: 'row', alignItems: 'center', gap: 12 },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  name: { color: '#FF399C', fontSize: 14, lineHeight: 20 },
+  name: { color: '#FF399C', fontSize: 13.5, lineHeight: 20 },
   pro: { fontSize: 12, lineHeight: 18, paddingHorizontal: 6, borderRadius: 99 },
   description: { fontSize: 12, lineHeight: 18, marginTop: 2 },
 });

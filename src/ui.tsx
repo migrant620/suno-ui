@@ -108,7 +108,7 @@ export const S = StyleSheet.create({
   pillEmpty: { borderWidth: 1, borderStyle: 'dashed', borderColor: C.border },
   pillActive: { backgroundColor: '#1010120A' },
   pillContent: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingLeft: 11, paddingRight: 19, height: 40 },  // 1dp dashed border sits outside: 12/20 from the pill edge
-  pillText: { fontFamily: 'RobotoMedium', fontSize: 14, lineHeight: 17 },
+  pillText: { fontFamily: 'RobotoMedium', fontSize: 13.5, lineHeight: 17 },
   modalOuter: { flex: 1, backgroundColor: '#00000040', alignItems: 'center', justifyContent: 'flex-end', paddingTop: Platform.OS === 'web' ? 0 : 49 },
   sheet: { backgroundColor: C.surface, borderTopLeftRadius: tokens.rounded.sheet, borderTopRightRadius: tokens.rounded.sheet, overflow: 'hidden', paddingBottom: Platform.OS === 'ios' ? 24 : 0 },
   handleArea: { height: 52, alignItems: 'center' },
